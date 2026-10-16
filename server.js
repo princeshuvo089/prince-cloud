@@ -11,7 +11,6 @@ const { Readable } = require('stream');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Cloudinary Configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'hyg1nscf',
   api_key: process.env.CLOUDINARY_API_KEY || '853692318542916',
@@ -41,19 +40,29 @@ function writeDB(data) {
 const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 100 * 1024 * 1024 }
+  limits: { fileSize: 105 * 1024 * 1024 } // Absolute max
 });
 
-// Upload Endpoint (Tied to user email across all devices)
+// Upload Endpoint with strict 30MB (Image) / 100MB (Video) restriction
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file selected.' });
     }
 
+    const isVideo = req.file.mimetype.startsWith('video');
+    const fileSize = req.file.size;
+
+    // Strict Server-Side Size Validation
+    if (!isVideo && fileSize > 30 * 1024 * 1024) {
+      return res.status(400).json({ success: false, message: 'Image exceeds maximum 30MB limit.' });
+    }
+    if (isVideo && fileSize > 100 * 1024 * 1024) {
+      return res.status(400).json({ success: false, message: 'Video exceeds maximum 100MB limit.' });
+    }
+
     const email = (req.body.email || 'guest').toLowerCase().trim();
     const cleanTag = email.replace(/[^a-zA-Z0-9]/g, '_');
-    const isVideo = req.file.mimetype.startsWith('video');
     const ext = path.extname(req.file.originalname).toLowerCase().replace('.', '') || (isVideo ? 'mp4' : 'png');
     const uniqueId = crypto.randomBytes(6).toString('hex');
 
@@ -74,7 +83,6 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
         const directPrinceUrl = `${protocol}://${host}/files/${uniqueId}.${ext}`;
         const postPageUrl = `${protocol}://${host}/p/${uniqueId}`;
 
-        // Save to cloud database
         const db = readDB();
         if (!db[email]) db[email] = [];
         db[email].unshift({
@@ -103,7 +111,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// Get User Vault (Loads on ANY device with same Gmail)
+// Vault sync
 app.get('/api/my-vault', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) return res.json({ success: true, files: [] });
@@ -111,7 +119,6 @@ app.get('/api/my-vault', async (req, res) => {
   const db = readDB();
   let files = db[email] || [];
 
-  // Fallback: If fresh deploy, retrieve directly from Cloudinary tags
   if (files.length === 0) {
     try {
       const cleanTag = email.replace(/[^a-zA-Z0-9]/g, '_');
@@ -144,7 +151,6 @@ app.get('/api/my-vault', async (req, res) => {
   res.json({ success: true, files });
 });
 
-// Delete from vault
 app.post('/api/delete-file', async (req, res) => {
   const { id, email, type } = req.body;
   if (!id || !email) return res.status(400).json({ success: false });
@@ -161,7 +167,6 @@ app.post('/api/delete-file', async (req, res) => {
   res.json({ success: true });
 });
 
-// Direct Masked CDN Stream
 app.get('/files/:filename', (req, res) => {
   const filename = req.params.filename;
   const dotIndex = filename.lastIndexOf('.');
