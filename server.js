@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const https = require('https');
 const crypto = require('crypto');
+const fs = require('fs');
 const { Readable } = require('stream');
 
 const app = express();
@@ -19,7 +20,23 @@ cloudinary.config({
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
+
+const DB_FILE = path.join(__dirname, 'vault_data.json');
+function readDB() {
+  try {
+    if (!fs.existsSync(DB_FILE)) return {};
+    return JSON.parse(fs.readFileSync(DB_FILE, 'utf8') || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+function writeDB(data) {
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  } catch (e) {}
+}
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -27,42 +44,54 @@ const upload = multer({
   limits: { fileSize: 100 * 1024 * 1024 }
 });
 
-// Upload Endpoint (Generates Prince Cloud Direct Masked Links)
+// Upload Endpoint (Tied to user email across all devices)
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file selected.' });
     }
 
+    const email = (req.body.email || 'guest').toLowerCase().trim();
+    const cleanTag = email.replace(/[^a-zA-Z0-9]/g, '_');
     const isVideo = req.file.mimetype.startsWith('video');
     const ext = path.extname(req.file.originalname).toLowerCase().replace('.', '') || (isVideo ? 'mp4' : 'png');
-    const uniqueId = crypto.randomBytes(6).toString('hex'); // ImgChest style 12-char ID
+    const uniqueId = crypto.randomBytes(6).toString('hex');
 
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         resource_type: isVideo ? 'video' : 'image',
         public_id: uniqueId,
-        folder: 'prince_vault'
+        folder: 'prince_vault',
+        tags: [cleanTag, 'prince_cloud']
       },
       (error, result) => {
         if (error) {
-          console.error(error);
           return res.status(500).json({ success: false, message: 'Upload failed.' });
         }
 
-        // Generate 100% Branded Prince Cloud URL
         const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
         const host = req.get('host');
         const directPrinceUrl = `${protocol}://${host}/files/${uniqueId}.${ext}`;
         const postPageUrl = `${protocol}://${host}/p/${uniqueId}`;
 
+        // Save to cloud database
+        const db = readDB();
+        if (!db[email]) db[email] = [];
+        db[email].unshift({
+          id: uniqueId,
+          url: directPrinceUrl,
+          postUrl: postPageUrl,
+          type: isVideo ? 'video' : 'image',
+          createdAt: Date.now()
+        });
+        writeDB(db);
+
         return res.json({
           success: true,
           url: directPrinceUrl,
           postUrl: postPageUrl,
-          rawUrl: result.secure_url,
-          format: ext,
-          resource_type: isVideo ? 'video' : 'image'
+          type: isVideo ? 'video' : 'image',
+          id: uniqueId
         });
       }
     );
@@ -74,7 +103,65 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// Custom Direct CDN Proxy: Serves file under prince-cloud domain
+// Get User Vault (Loads on ANY device with same Gmail)
+app.get('/api/my-vault', async (req, res) => {
+  const email = (req.query.email || '').toLowerCase().trim();
+  if (!email) return res.json({ success: true, files: [] });
+
+  const db = readDB();
+  let files = db[email] || [];
+
+  // Fallback: If fresh deploy, retrieve directly from Cloudinary tags
+  if (files.length === 0) {
+    try {
+      const cleanTag = email.replace(/[^a-zA-Z0-9]/g, '_');
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const host = req.get('host');
+
+      const imgRes = await cloudinary.api.resources_by_tag(cleanTag, { resource_type: 'image', max_results: 50 }).catch(() => ({ resources: [] }));
+      const vidRes = await cloudinary.api.resources_by_tag(cleanTag, { resource_type: 'video', max_results: 50 }).catch(() => ({ resources: [] }));
+
+      const combined = [...(imgRes.resources || []), ...(vidRes.resources || [])];
+      files = combined.map(r => {
+        const id = path.basename(r.public_id);
+        const ext = r.format || (r.resource_type === 'video' ? 'mp4' : 'jpg');
+        return {
+          id: id,
+          url: `${protocol}://${host}/files/${id}.${ext}`,
+          postUrl: `${protocol}://${host}/p/${id}`,
+          type: r.resource_type,
+          createdAt: new Date(r.created_at).getTime()
+        };
+      });
+
+      if (files.length > 0) {
+        db[email] = files;
+        writeDB(db);
+      }
+    } catch (e) {}
+  }
+
+  res.json({ success: true, files });
+});
+
+// Delete from vault
+app.post('/api/delete-file', async (req, res) => {
+  const { id, email, type } = req.body;
+  if (!id || !email) return res.status(400).json({ success: false });
+
+  try {
+    await cloudinary.uploader.destroy(`prince_vault/${id}`, { resource_type: type || 'image' });
+  } catch (e) {}
+
+  const db = readDB();
+  if (db[email]) {
+    db[email] = db[email].filter(f => f.id !== id);
+    writeDB(db);
+  }
+  res.json({ success: true });
+});
+
+// Direct Masked CDN Stream
 app.get('/files/:filename', (req, res) => {
   const filename = req.params.filename;
   const dotIndex = filename.lastIndexOf('.');
@@ -97,7 +184,6 @@ app.get('/files/:filename', (req, res) => {
   });
 });
 
-// Catch-all
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
