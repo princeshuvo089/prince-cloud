@@ -8,7 +8,7 @@
   <!-- Google Official Identity Services SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   
   <style>
     body {
@@ -83,7 +83,7 @@
         </div>
       </div>
       
-      <!-- Profile with Safe Dropdown (Prevents Accidental Logout) -->
+      <!-- Profile with Safe Dropdown -->
       <div id="auth-section" class="relative"></div>
 
     </div>
@@ -125,11 +125,30 @@
           </div>
         </div>
 
-        <!-- Upload Spinner -->
-        <div id="upload-overlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md rounded-xl flex flex-col items-center justify-center z-30">
-          <div class="w-10 h-10 rounded-full border-3 border-cyan-500/20 border-t-cyan-400 border-r-fuchsia-500 animate-spin"></div>
-          <p class="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400 mt-3">Uploading to Prince Cloud CDN...</p>
+        <!-- 🔥 ULTRA-EXPENSIVE ANIMATED PERCENTAGE PROGRESS OVERLAY -->
+        <div id="upload-overlay" class="hidden absolute inset-0 bg-[#050814]/96 backdrop-blur-xl rounded-xl flex flex-col items-center justify-center p-6 z-30 transition-all duration-300">
+          
+          <!-- Glowing Pulsing Ring with Live Percentage -->
+          <div class="relative w-24 h-24 flex items-center justify-center mb-3">
+            <div class="absolute inset-0 rounded-full border-2 border-cyan-500/20"></div>
+            <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-cyan-400 border-r-fuchsia-500 animate-spin"></div>
+            <div class="absolute -inset-1 rounded-full bg-gradient-to-tr from-cyan-500/20 to-fuchsia-500/20 blur-md"></div>
+            
+            <div class="relative text-center">
+              <span id="upload-percentage-text" class="text-2xl font-black mono text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-fuchsia-400">0%</span>
+            </div>
+          </div>
+
+          <!-- Status & Live Megabyte Info -->
+          <p id="upload-status-headline" class="text-xs font-bold text-white tracking-wide mb-1">Uploading to Prince Cloud CDN...</p>
+          <div id="upload-bytes-counter" class="text-[10px] mono text-slate-400 mb-4">0 MB / 0 MB</div>
+
+          <!-- High-End Rainbow Glowing Bar -->
+          <div class="w-full max-w-xs h-2 bg-slate-900/90 rounded-full overflow-hidden p-0.5 border border-white/10 shadow-inner">
+            <div id="upload-progress-fill" class="h-full bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full w-0 transition-all duration-150 shadow-[0_0_14px_rgba(6,182,212,0.7)]"></div>
+          </div>
         </div>
+
       </div>
 
       <!-- FULL-SCREEN LOCK OVERLAY (When NOT logged in) -->
@@ -307,7 +326,7 @@
     <span>Copied!</span>
   </div>
 
-  <!-- Comprehensive Professional Footer -->
+  <!-- Footer -->
   <footer class="bg-[#03060f] border-t border-white/[0.07] pt-8 pb-5 px-4">
     <div class="max-w-4xl mx-auto">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-6 text-xs">
@@ -424,7 +443,6 @@
       if (activeSession) {
         lockScreen.classList.add('hidden');
         authBox.innerHTML = `
-          <!-- Safe Profile Trigger -->
           <div onclick="toggleProfileDropdown(event)" class="cursor-pointer flex items-center space-x-1.5 bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/30 px-2 py-1 rounded-lg transition">
             ${activeSession.picture ? 
               `<img src="${activeSession.picture}" class="w-6 h-6 rounded-full border border-cyan-400">` : 
@@ -434,7 +452,6 @@
             <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 ml-1"></i>
           </div>
 
-          <!-- Protected Dropdown Menu (No Accidental Logout) -->
           <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-slate-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl p-3 z-50">
             <div class="flex items-center space-x-2 pb-2.5 mb-2 border-b border-white/[0.08]">
               ${activeSession.picture ? `<img src="${activeSession.picture}" class="w-7 h-7 rounded-full">` : ''}
@@ -471,21 +488,16 @@
     function toggleProfileDropdown(e) {
       e.stopPropagation();
       const dropdown = document.getElementById('profile-dropdown');
-      if (dropdown) {
-        dropdown.classList.toggle('hidden');
-      }
+      if (dropdown) dropdown.classList.toggle('hidden');
     }
 
-    // Toggle 3-Dot Options Menu for specific vault card
     function toggleCardMenu(e, id) {
       e.stopPropagation();
       document.querySelectorAll('.card-menu-pop').forEach(el => {
         if (el.id !== `menu-${id}`) el.classList.add('hidden');
       });
       const menu = document.getElementById(`menu-${id}`);
-      if (menu) {
-        menu.classList.toggle('hidden');
-      }
+      if (menu) menu.classList.toggle('hidden');
     }
 
     function closeDropdownIfClickedOutside(event) {
@@ -501,9 +513,7 @@
     function confirmSignOut() {
       localStorage.removeItem('prince_user_session');
       activeSession = null;
-      if (window.google) {
-        google.accounts.id.disableAutoSelect();
-      }
+      if (window.google) google.accounts.id.disableAutoSelect();
       renderUI();
     }
 
@@ -515,7 +525,8 @@
       document.getElementById('media-upload-input').click();
     }
 
-    async function initiateUpload(e) {
+    // 🔥 REAL-TIME PERCENTAGE UPLOAD CONTROLLER
+    function initiateUpload(e) {
       const file = e.target.files[0];
       if (!file || !activeSession) return;
 
@@ -524,27 +535,68 @@
       form.append('email', activeSession.email);
 
       const overlay = document.getElementById('upload-overlay');
+      const percentText = document.getElementById('upload-percentage-text');
+      const progressBar = document.getElementById('upload-progress-fill');
+      const statusText = document.getElementById('upload-status-headline');
+      const bytesText = document.getElementById('upload-bytes-counter');
+
+      // Reset overlay
+      percentText.textContent = '0%';
+      progressBar.style.width = '0%';
+      statusText.textContent = 'Uploading to Prince Cloud CDN...';
+      bytesText.textContent = `0 MB / ${(file.size / (1024 * 1024)).toFixed(1)} MB`;
       overlay.classList.remove('hidden');
 
-      try {
-        const res = await fetch('/api/upload', { method: 'POST', body: form });
-        const data = await res.json();
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/upload', true);
 
-        if (data.success) {
-          fetchAndRenderVault();
-          openShareModal(data.url, data.postUrl, data.type);
-        } else {
-          alert(data.message || 'Upload rejected.');
+      // Track Live Upload Progress
+      xhr.upload.onprogress = function (event) {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          percentText.textContent = percent + '%';
+          progressBar.style.width = percent + '%';
+
+          const uploadedMB = (event.loaded / (1024 * 1024)).toFixed(1);
+          const totalMB = (event.total / (1024 * 1024)).toFixed(1);
+          bytesText.textContent = `${uploadedMB} MB / ${totalMB} MB`;
+
+          if (percent === 100) {
+            statusText.textContent = 'Optimizing & Generating CDN Links...';
+          }
         }
-      } catch (err) {
-        alert('Upload failed due to connection error.');
-      } finally {
+      };
+
+      xhr.onload = function () {
         overlay.classList.add('hidden');
         document.getElementById('media-upload-input').value = '';
-      }
+
+        if (xhr.status === 200) {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            if (data.success) {
+              fetchAndRenderVault();
+              openShareModal(data.url, data.postUrl, data.type);
+            } else {
+              alert(data.message || 'Upload rejected.');
+            }
+          } catch (e) {
+            alert('Upload processing error.');
+          }
+        } else {
+          alert('Upload failed due to server error.');
+        }
+      };
+
+      xhr.onerror = function () {
+        overlay.classList.add('hidden');
+        document.getElementById('media-upload-input').value = '';
+        alert('Upload failed due to connection error.');
+      };
+
+      xhr.send(form);
     }
 
-    // Fetches uploads from server (Cross-device synced with 3-Dot Menus)
     async function fetchAndRenderVault() {
       const gallery = document.getElementById('media-gallery');
       const emptyBox = document.getElementById('empty-notice');
@@ -576,7 +628,6 @@
         gallery.innerHTML = files.map((item) => `
           <div class="relative rounded-xl overflow-hidden border border-white/10 bg-slate-900/60 aspect-square shadow group">
             
-            <!-- Clickable Media Thumbnail -->
             <div onclick="openShareModal('${item.url}', '${item.postUrl}', '${item.type}')" class="w-full h-full cursor-pointer">
               ${item.type === 'video' ? 
                 `<video src="${item.url}" class="w-full h-full object-cover"></video>
@@ -587,13 +638,11 @@
               }
             </div>
 
-            <!-- 3-Dot Menu Button (Top Right) -->
             <button onclick="toggleCardMenu(event, '${item.id}')" 
                     class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-slate-950/80 hover:bg-slate-900 text-slate-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/10 shadow-lg z-10 transition">
               <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
 
-            <!-- 3-Dot Dropdown Menu Options -->
             <div id="menu-${item.id}" class="card-menu-pop hidden absolute top-8 right-1.5 w-32 bg-slate-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-1 z-20 text-[11px]">
               <button onclick="openShareModal('${item.url}', '${item.postUrl}', '${item.type}')" 
                       class="w-full px-3 py-1.5 text-left text-cyan-300 hover:bg-white/[0.06] flex items-center space-x-2 font-medium transition">
