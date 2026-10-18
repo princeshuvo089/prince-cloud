@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World of Love — 195 Languages</title>
+
+<!-- Romantic Luxury Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg-deep: #0e030a;
+    --card-bg: rgba(30, 10, 24, 0.65);
+    --card-hover: rgba(52, 16, 42, 0.9);
+    --border-love: rgba(255, 77, 141, 0.25);
+    --border-glow: rgba(255, 110, 165, 0.65);
+    --pink-neon: #ff2a7a;
+    --pink-soft: #ff85b3;
+    --rose-light: #ffd1e3;
+    --gold: #ffd166;
+    --glass-blur: 16px;
+}
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family: 'Outfit', sans-serif;
+    background: radial-gradient(circle at 50% 10%, #2b0820 0%, #150311 40%, var(--bg-deep) 100%);
+    color: #fff;
+    min-height: 100vh;
+    padding: 30px 16px 80px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Floating Hearts Canvas */
+#loveCanvas{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container{
+    max-width: 1180px;
+    margin: auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* Header */
+header{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.heart-badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 42, 122, 0.12);
+    border: 1px solid rgba(255, 133, 179, 0.3);
+    padding: 7px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    color: var(--rose-light);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    box-shadow: 0 0 20px rgba(255, 42, 122, 0.2);
+    margin-bottom: 12px;
+}
+
+.pulse-heart{
+    display: inline-block;
+    color: var(--pink-neon);
+    animation: heartbeat 1.3s infinite ease-in-out;
+}
+
+@keyframes heartbeat{
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.3); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.22); }
+}
+
+h1{
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(48px, 8vw, 84px);
+    font-weight: 400;
+    background: linear-gradient(135deg, #ffffff 10%, #ff85b3 50%, #ff2a7a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    text-shadow: 0 0 40px rgba(255, 42, 122, 0.35);
+}
+
+.subtitle{
+    color: #cca4bb;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+/* Floating Control Center */
+.control-bar{
+    position: sticky;
+    top: 15px;
+    z-index: 100;
+    background: rgba(25, 7, 21, 0.82);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--border-love);
+    border-radius: 20px;
+    padding: 12px 18px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 42, 122, 0.15);
+    margin-bottom: 22px;
+    transition: all 0.3s;
+}
+
+.control-bar:focus-within{
+    border-color: var(--border-glow);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.65), 0 0 35px rgba(255, 42, 122, 0.3);
+}
+
+.search-box{
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon{
+    position: absolute;
+    left: 15px;
+    font-size: 16px;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+input{
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 13px 40px 13px 44px;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+input:focus{
+    background: rgba(255, 255, 255, 0.09);
+    border-color: var(--pink-soft);
+}
+
+input::placeholder{
+    color: #a78096;
+}
+
+.clear-btn{
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #ff9ec5;
+    font-size: 17px;
+    cursor: pointer;
+    display: none;
+    padding: 5px;
+}
+
+/* Copy All Button */
+.btn-copy-all{
+    background: linear-gradient(135deg, #ff2a7a 0%, #c41454 100%);
+    color: white;
+    border: none;
+    padding: 13px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(255, 42, 122, 0.38);
+    transition: all 0.3s;
+}
+
+.btn-copy-all:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(255, 42, 122, 0.55);
+    filter: brightness(1.1);
+}
+
+/* Status Bar */
+.meta-status{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 6px 14px;
+    font-size: 13.5px;
+    color: #b78fa6;
+}
+
+.meta-status b{
+    color: var(--pink-soft);
+}
+
+/* Cards Grid */
+.grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.card{
+    background: var(--card-bg);
+    border: 1px solid var(--border-love);
+    border-radius: 18px;
+    padding: 18px 20px;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card::after{
+    content: "❤";
+    position: absolute;
+    bottom: -15px;
+    right: -10px;
+    font-size: 80px;
+    color: rgba(255, 42, 122, 0.04);
+    pointer-events: none;
+    transition: all 0.4s;
+}
+
+.card:hover{
+    background: var(--card-hover);
+    border-color: var(--border-glow);
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 42, 122, 0.25);
+}
+
+.card:hover::after{
+    transform: scale(1.15) rotate(-8deg);
+    color: rgba(255, 42, 122, 0.08);
+}
+
+.card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.country-info{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.flag{
+    font-size: 26px;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
+}
+
+.country-name{
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.2px;
+}
+
+.tag{
+    font-size: 11px;
+    font-weight: 600;
+    color: #d197b7;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 3px 9px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card-body{
+    padding: 2px 0;
+}
+
+.love-phrase{
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--rose-light);
+    line-height: 1.45;
+    word-break: break-word;
+    text-shadow: 0 0 15px rgba(255, 133, 179, 0.25);
+}
+
+.card-footer{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 10px;
+}
+
+/* Single Copy Button */
+.copy-btn{
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--rose-light);
+    padding: 8px 16px;
+    border-radius: 9px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.25s;
+}
+
+.copy-btn:hover{
+    background: rgba(255, 42, 122, 0.22);
+    border-color: var(--pink-soft);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255, 42, 122, 0.3);
+}
+
+.copy-btn.copied{
+    background: rgba(46, 213, 115, 0.2) !important;
+    border-color: #2ed573 !important;
+    color: #2ed573 !important;
+}
+
+/* Floating Toast Notification */
+.toast{
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(24, 6, 21, 0.95);
+    border: 1px solid var(--pink-soft);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 42, 122, 0.5);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast.show{
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+/* Empty State */
+.no-result{
+    text-align: center;
+    padding: 70px 20px;
+    display: none;
+}
+
+.no-result-heart{
+    font-size: 45px;
+    display: inline-block;
+    animation: heartbeat 1.5s infinite ease-in-out;
+    margin-bottom: 14px;
+}
+
+.no-result h3{
+    color: var(--pink-soft);
+    font-size: 21px;
+    margin-bottom: 6px;
+}
+
+.no-result p{
+    color: #a78096;
+    font-size: 14px;
+}
+
+footer{
+    text-align: center;
+    margin-top: 50px;
+    font-size: 13px;
+    color: #a78096;
+}
+
+@media(max-width: 768px){
+    body{
+        padding: 20px 12px 60px;
+    }
+
+    .control-bar{
+        flex-direction: column;
+        padding: 12px;
+        top: 10px;
+    }
+
+    .search-box, .btn-copy-all{
+        width: 100%;
+    }
+
+    .btn-copy-all{
+        justify-content: center;
+    }
+
+    .grid{
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Animated Floating Hearts Canvas -->
+<canvas id="loveCanvas"></canvas>
+
+<div class="container">
+
+    <header>
+        <div class="heart-badge">
+            <span class="pulse-heart">❤</span> Romantic World Edition <span class="pulse-heart">❤</span>
+        </div>
+        <h1>Infinite Love</h1>
+        <div class="subtitle">Expressing the deepest emotion in 195+ languages around the globe</div>
+    </header>
+
+    <!-- Interactive Control Hub -->
+    <div class="control-bar">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search" placeholder="Search country or language (e.g. Bangladesh, France, Te amo)..." autocomplete="off">
+            <button class="clear-btn" id="clearBtn" title="Clear Search">✕</button>
+        </div>
+        <!-- Copy All Button -->
+        <button class="btn-copy-all" id="copyAllBtn" onclick="copyAll()">
+            <span>📋</span>
+            <span class="btn-all-text">Copy All 196 Countries</span>
+        </button>
+    </div>
+
+    <div class="meta-status">
+        <div>Total Nations: <b id="count">196</b></div>
+        <div>One World, One Love ✨</div>
+    </div>
+
+    <!-- Country Cards Grid -->
+    <div class="grid" id="list"></div>
+
+    <div class="no-result" id="noResult">
+        <div class="no-result-heart">💔</div>
+        <h3>No Country Found</h3>
+        <p>Try searching with another spelling, language, or clear search.</p>
+    </div>
+
+    <footer>
+        Crafted with endless affection • <span class="pulse-heart">❤️</span> Global Harmony
+    </footer>
+
+</div>
+
+<!-- Floating Toast -->
+<div class="toast" id="toast">
+    <span id="toastIcon">💖</span>
+    <span id="toastMsg">Copied!</span>
+</div>
+
+<script>
+const countries = [
+["🇦🇫","Afghanistan","زه تا سره مینه لرم"],
+["🇦🇱","Albania","Të dua"],
+["🇩🇿","Algeria","أحبك"],
+["🇦🇩","Andorra","T'estimo"],
+["🇦🇴","Angola","Eu te amo"],
+["🇦🇬","Antigua and Barbuda","I love you"],
+["🇦🇷","Argentina","Te amo"],
+["🇦🇲","Armenia","Ես քេզ սիրում եմ"],
+["🇦🇺","Australia","I love you"],
+["🇦🇹","Austria","Ich liebe dich"],
+["🇦🇿","Azerbaijan","Mən səni sevirəm"],
+["🇧🇸","Bahamas","I love you"],
+["🇧🇭","Bahrain","أحبك"],
+["🇧🇩","Bangladesh","আমি তোমাকে ভালোবাসি"],
+["🇧🇧","Barbados","I love you"],
+["🇧🇾","Belarus","Я цябе кахаю"],
+["🇧🇪","Belgium","Je t'aime"],
+["🇧🇿","Belize","I love you"],
+["🇧🇯","Benin","Je t'aime"],
+["🇧🇹","Bhutan","ང་ཁྱོད་ལ་དགའ།"],
+["🇧🇴","Bolivia","Te amo"],
+["🇧🇦","Bosnia and Herzegovina","Volim te"],
+["🇧🇼","Botswana","Ke a go rata"],
+["🇧🇷","Brazil","Eu te amo"],
+["🇧🇳","Brunei","Saya cinta padamu"],
+["🇧🇬","Bulgaria","Обичам те"],
+["🇧🇫","Burkina Faso","Je t'aime"],
+["🇧🇮","Burundi","Ndagukunda"],
+["🇨🇻","Cabo Verde","Amo-te"],
+["🇰🇭","Cambodia","ខ្ញុំស្រឡាញ់អ្នក"],
+["🇨🇲","Cameroon","Je t'aime"],
+["🇨🇦","Canada","I love you / Je t'aime"],
+["🇨🇫","Central African Republic","Je t'aime"],
+["🇹🇩","Chad","أحبك"],
+["🇨🇱","Chile","Te amo"],
+["🇨🇳","China","我爱你"],
+["🇨🇴","Colombia","Te amo"],
+["🇰🇲","Comoros","Ndzou yendza"],
+["🇨🇬","Congo","Je t'aime"],
+["🇨🇩","DR Congo","Nalingi yo"],
+["🇨🇷","Costa Rica","Te amo"],
+["🇨🇮","Côte d'Ivoire","Je t'aime"],
+["🇭🇷","Croatia","Volim te"],
+["🇨🇺","Cuba","Te amo"],
+["🇨🇾","Cyprus","Σ' αγαπώ"],
+["🇨🇿","Czechia","Miluji tě"],
+["🇩🇰","Denmark","Jeg elsker dig"],
+["🇩🇯","Djibouti","Je t'aime"],
+["🇩🇲","Dominica","I love you"],
+["🇩🇴","Dominican Republic","Te amo"],
+["🇪🇨","Ecuador","Te amo"],
+["🇪🇬","Egypt","أحبك"],
+["🇸🇻","El Salvador","Te amo"],
+["🇬🇶","Equatorial Guinea","Te quiero"],
+["🇪🇷","Eritrea","የፍቅር እየ"],
+["🇪🇪","Estonia","Ma armastan sind"],
+["🇸🇿","Eswatini","Ngiyakutsandza"],
+["🇪🇹","Ethiopia","እወድሃለሁ"],
+["🇫🇯","Fiji","Au domoni iko"],
+["🇫🇮","Finland","Minä rakastan sinua"],
+["🇫🇷","France","Je t'aime"],
+["🇬🇦","Gabon","Je t'aime"],
+["🇬🇲","Gambia","I love you"],
+["🇬🇪","Georgia","მე შენ მიყვარხარ"],
+["🇩🇪","Germany","Ich liebe dich"],
+["🇬🇭","Ghana","Me dɔ wo"],
+["🇬🇷","Greece","Σ' αγαπώ"],
+["🇬🇩","Grenada","I love you"],
+["🇬🇹","Guatemala","Te amo"],
+["🇬🇳","Guinea","Je t'aime"],
+["🇬🇼","Guinea-Bissau","Amo-te"],
+["🇬🇾","Guyana","I love you"],
+["🇭🇹","Haiti","Mwen renmen ou"],
+["🇭🇳","Honduras","Te amo"],
+["🇭🇺","Hungary","Szeretlek"],
+["🇮🇸","Iceland","Ég elska þig"],
+["🇮🇳","India","मैं तुमसे प्यार करता हूँ"],
+["🇮🇩","Indonesia","Aku cinta kamu"],
+["🇮🇷","Iran","دوستت دارم"],
+["🇮🇶","Iraq","أحبك"],
+["🇮🇪","Ireland","Is tú mo ghrá"],
+["🇮🇱","Israel","אני אוהב אותך"],
+["🇮🇹","Italy","Ti amo"],
+["🇯🇲","Jamaica","I love you"],
+["🇯🇵","Japan","愛してる"],
+["🇯🇴","Jordan","أحبك"],
+["🇰🇿","Kazakhstan","Мен сені сүйемін"],
+["🇰🇪","Kenya","Nakupenda"],
+["🇰🇮","Kiribati","I tangiriko"],
+["🇰🇼","Kuwait","أحبك"],
+["🇰🇬","Kyrgyzstan","Мен сени сүйөм"],
+["🇱🇦","Laos","ຂ້ອຍຮັກເຈົ້າ"],
+["🇱🇻","Latvia","Es tevi mīlu"],
+["🇱🇧","Lebanon","أحبك"],
+["🇱🇸","Lesotho","Kea u rata"],
+["🇱🇷","Liberia","I love you"],
+["🇱🇾","Libya","أحبك"],
+["🇱🇮","Liechtenstein","Ich liebe dich"],
+["🇱🇹","Lithuania","Aš tave myliu"],
+["🇱🇺","Luxembourg","Ech hunn dech gär"],
+["🇲🇬","Madagascar","Tiako ianao"],
+["🇲🇼","Malawi","Ndimakukonda"],
+["🇲🇾","Malaysia","Saya cintakan awak"],
+["🇲🇻","Maldives","ކަލޭގެ ލޯބި ވެސް"],
+["🇲🇱","Mali","Je t'aime"],
+["🇲🇹","Malta","Inħobbok"],
+["🇲🇭","Marshall Islands","Ij yokwe eok"],
+["🇲🇷","Mauritania","أحبك"],
+["🇲🇺","Mauritius","Mo kontan twa"],
+["🇲🇽","Mexico","Te amo"],
+["🇫🇲","Micronesia","I love you"],
+["🇲🇩","Moldova","Te iubesc"],
+["🇲🇨","Monaco","Je t'aime"],
+["🇲🇳","Mongolia","Би чамд хайртай"],
+["🇲🇪","Montenegro","Volim te"],
+["🇲🇦","Morocco","أحبك"],
+["🇲🇿","Mozambique","Amo-te"],
+["🇲🇲","Myanmar","ငါမင်းကိုချစ်တယ်"],
+["🇳🇦","Namibia","I love you"],
+["🇳🇷","Nauru","I love you"],
+["🇳🇵","Nepal","म तिमीलाई माया गर्छु"],
+["🇳🇱","Netherlands","Ik hou van jou"],
+["🇳🇿","New Zealand","Aroha ahau ki a koe"],
+["🇳🇮","Nicaragua","Te amo"],
+["🇳🇪","Niger","Je t'aime"],
+["🇳🇬","Nigeria","Mo nífẹ̀ẹ́ rẹ"],
+["🇰🇵","North Korea","사랑해"],
+["🇲🇰","North Macedonia","Те сакам"],
+["🇳🇴","Norway","Jeg elsker deg"],
+["🇴🇲","Oman","أحبك"],
+["🇵🇰","Pakistan","میں تم سے پیار کرتا ہوں"],
+["🇵🇼","Palau","A kltang"],
+["🇵🇦","Panama","Te amo"],
+["🇵🇬","Papua New Guinea","Mi laikim yu"],
+["🇵🇾","Paraguay","Rohayhu"],
+["🇵🇪","Peru","Te amo"],
+["🇵🇭","Philippines","Mahal kita"],
+["🇵🇱","Poland","Kocham cię"],
+["🇵🇹","Portugal","Amo-te"],
+["🇶🇦","Qatar","أحبك"],
+["🇷🇴","Romania","Te iubesc"],
+["🇷🇺","Russia","Я тебя люблю"],
+["🇷🇼","Rwanda","Ndagukunda"],
+["🇰🇳","Saint Kitts and Nevis","I love you"],
+["🇱🇨","Saint Lucia","I love you"],
+["🇻🇨","Saint Vincent and the Grenadines","I love you"],
+["🇼🇸","Samoa","Ou te alofa ia te oe"],
+["🇸🇲","San Marino","Ti amo"],
+["🇸🇹","São Tomé and Príncipe","Amo-te"],
+["🇸🇦","Saudi Arabia","أحبك"],
+["🇸🇳","Senegal","Dama la bëgg"],
+["🇷🇸","Serbia","Волим те"],
+["🇸🇨","Seychelles","Mon kontan ou"],
+["🇸🇱","Sierra Leone","I love you"],
+["🇸🇬","Singapore","我爱你"],
+["🇸🇰","Slovakia","Ľúbim ťa"],
+["🇸🇮","Slovenia","Ljubim te"],
+["🇸🇧","Solomon Islands","I love you"],
+["🇸🇴","Somalia","Waan ku jeclahay"],
+["🇿🇦","South Africa","Ngiyakuthanda"],
+["🇰🇷","South Korea","사랑해"],
+["🇸🇸","South Sudan","I love you"],
+["🇪🇸","Spain","Te quiero"],
+["🇱🇰","Sri Lanka","මම ඔයාට ආදරෙයි"],
+["🇸🇩","Sudan","أحبك"],
+["🇸🇷","Suriname","Mi lobi yu"],
+["🇸🇪","Sweden","Jag älskar dig"],
+["🇨🇭","Switzerland","Ich liebe dich / Je t'aime"],
+["🇸🇾","Syria","أحبك"],
+["🇹🇯","Tajikistan","Ман туро дӯст медорам"],
+["🇹🇿","Tanzania","Nakupenda"],
+["🇹🇭","Thailand","ฉันรักคุณ"],
+["🇹🇱","Timor-Leste","Hau hadomi ó"],
+["🇹🇬","Togo","Je t'aime"],
+["🇹🇴","Tonga","'Oku ou 'ofa 'ia koe"],
+["🇹🇹","Trinidad and Tobago","I love you"],
+["🇹🇳","Tunisia","أحبك"],
+["🇹🇷","Turkey","Seni seviyorum"],
+["🇹🇲","Turkmenistan","Men seni söýýärin"],
+["🇹🇻","Tuvalu","Au e alofa ia koe"],
+["🇺🇬","Uganda","Nkwagala"],
+["🇺🇦","Ukraine","Я тебе кохаю"],
+["🇦🇪","United Arab Emirates","أحبك"],
+["🇬🇧","United Kingdom","I love you"],
+["🇺🇸","United States","I love you"],
+["🇺🇾","Uruguay","Te amo"],
+["🇺🇿","Uzbekistan","Men seni sevaman"],
+["🇻🇺","Vanuatu","Mi lavem yu"],
+["🇻🇦","Vatican City","Ti amo"],
+["🇻🇪","Venezuela","Te amo"],
+["🇻🇳","Vietnam","Anh yêu em / Em yêu anh"],
+["🇾🇪","Yemen","أحبك"],
+["🇿🇲","Zambia","Nalikukonda"],
+["🇿🇼","Zimbabwe","Ndinokuda"],
+["🇵🇸","Palestine","أحبك"]
+];
+
+const list = document.getElementById("list");
+const countEl = document.getElementById("count");
+const searchInput = document.getElementById("search");
+const clearBtn = document.getElementById("clearBtn");
+const noResult = document.getElementById("noResult");
+const toast = document.getElementById("toast");
+const toastMsg = document.getElementById("toastMsg");
+
+/* 100% Fail-safe Clipboard Copy Function */
+function safeClipboardCopy(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+    } else {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        temp.style.position = "fixed";
+        temp.style.left = "-9999px";
+        document.body.appendChild(temp);
+        temp.focus();
+        temp.select();
+        return new Promise((resolve, reject) => {
+            document.execCommand('copy') ? resolve() : reject();
+            temp.remove();
+        });
+    }
+}
+
+/* Toast Alert Popup */
+let toastTimeout;
+function showToast(message, icon = "💖") {
+    clearTimeout(toastTimeout);
+    document.getElementById("toastIcon").innerText = icon;
+    toastMsg.innerText = message;
+    toast.classList.add("show");
+
+    toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2200);
+}
+
+/* Render Cards */
+function render(data = countries){
+    list.innerHTML = "";
+    countEl.innerText = data.length;
+
+    data.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            <div class="card-header">
+                <div class="country-info">
+                    <span class="flag">${item[0]}</span>
+                    <span class="country-name">${item[1]}</span>
+                </div>
+                <span class="tag">#${index + 1}</span>
+            </div>
+
+            <div class="card-body">
+                <div class="love-phrase">${item[2]}</div>
+            </div>
+
+            <div class="card-footer">
+                <button class="copy-btn" onclick="copySingle(${JSON.stringify(item[2])}, ${JSON.stringify(item[1])}, this)">
+                    <span>❤</span>
+                    <span class="btn-text">Copy</span>
+                </button>
+            </div>
+        `;
+
+        list.appendChild(div);
+    });
+
+    noResult.style.display = data.length === 0 ? "block" : "none";
+}
+
+/* 1. একটি একটি করে কপি করার ব্যবস্থা (Single Copy) */
+function copySingle(phrase, countryName, btn){
+    safeClipboardCopy(phrase).then(() => {
+        const textSpan = btn.querySelector(".btn-text");
+        const oldText = textSpan.innerText;
+        btn.classList.add("copied");
+        textSpan.innerText = "Copied ✓";
+
+        showToast(`Copied for ${countryName}: "${phrase}"`, "✨");
+
+        setTimeout(() => {
+            btn.classList.remove("copied");
+            textSpan.innerText = oldText;
+        }, 1500);
+    }).catch(() => {
+        showToast("Copy permission denied", "⚠️");
+    });
+}
+
+/* 2. একসাথে সবগুলো কপি করার ব্যবস্থা (Copy All) */
+function copyAll(){
+    const allFormattedText = countries
+        .map((item, i) => `${i + 1}. ${item[0]} ${item[1]}: ${item[2]}`)
+        .join("\n\n");
+
+    safeClipboardCopy(allFormattedText).then(() => {
+        const btn = document.getElementById("copyAllBtn");
+        const btnText = btn.querySelector(".btn-all-text");
+        const oldText = btnText.innerText;
+
+        btnText.innerText = "All 196 Copied! ✓";
+        btn.style.background = "#2ed573";
+        showToast("All 196 countries copied to clipboard!", "🎉");
+
+        setTimeout(() => {
+            btnText.innerText = oldText;
+            btn.style.background = "";
+        }, 2200);
+    }).catch(() => {
+        showToast("Failed to copy all", "⚠️");
+    });
+}
+
+/* Search Functionality */
+function handleSearch(){
+    const val = searchInput.value.toLowerCase().trim();
+    clearBtn.style.display = val.length > 0 ? "block" : "none";
+
+    const filtered = countries.filter(item =>
+        item[1].toLowerCase().includes(val) ||
+        item[2].toLowerCase().includes(val)
+    );
+
+    render(filtered);
+}
+
+searchInput.addEventListener("input", handleSearch);
+
+clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    searchInput.focus();
+    handleSearch();
+});
+
+render();
+
+/* ========================================================
+   Floating Romantic Hearts Canvas Engine
+   ======================================================== */
+const canvas = document.getElementById("loveCanvas");
+const ctx = canvas.getContext("2d");
+
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
+
+window.addEventListener("resize", () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+});
+
+class FloatingHeart {
+    constructor() {
+        this.reset(true);
+    }
+
+    reset(initial = false) {
+        this.x = Math.random() * width;
+        this.y = initial ? Math.random() * height : height + 30;
+        this.size = Math.random() * 15 + 10;
+        this.speedY = Math.random() * 0.75 + 0.35;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.opacity = Math.random() * 0.45 + 0.15;
+        this.wobble = Math.random() * Math.PI * 2;
+        this.wobbleSpeed = Math.random() * 0.02 + 0.01;
+        this.isSparkle = Math.random() > 0.7;
+    }
+
+    update() {
+        this.y -= this.speedY;
+        this.wobble += this.wobbleSpeed;
+        this.x += Math.sin(this.wobble) * 0.5 + this.speedX;
+
+        if (this.y < -30 || this.x < -30 || this.x > width + 30) {
+            this.reset();
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.translate(this.x, this.y);
+
+        if (this.isSparkle) {
+            ctx.fillStyle = "#ffd166";
+            ctx.shadowColor = "#ffd166";
+            ctx.shadowBlur = 8;
+            ctx.font = `${this.size * 0.9}px Arial`;
+            ctx.fillText("✦", 0, 0);
+        } else {
+            ctx.fillStyle = "#ff4d8d";
+            ctx.shadowColor = "#ff2a7a";
+            ctx.shadowBlur = 12;
+            ctx.font = `${this.size}px Arial`;
+            ctx.fillText("❤", 0, 0);
+        }
+
+        ctx.restore();
+    }
+}
+
+const hearts = Array.from({ length: 32 }, () => new FloatingHeart());
+
+function animateCanvas() {
+    ctx.clearRect(0, 0, width, height);
+    hearts.forEach(h => {
+        h.update();
+        h.draw();
+    });
+    requestAnimationFrame(animateCanvas);
+}
+
+animateCanvas();
+</script>
+
+</body>
+</html>
